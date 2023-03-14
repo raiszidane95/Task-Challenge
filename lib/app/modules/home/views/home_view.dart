@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -16,41 +17,74 @@ class HomeView extends GetView<HomeController> {
         body: Obx(
           () => controller.isLoading.value
               ? Center(child: CircularProgressIndicator())
-              : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: Column(
-                    children: [
-                      Text(controller.listData.last.section.toString()),
-                      Gap(10),
-                      Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        elevation: 5,
-                        child: GridView.builder(
-                          physics: PageScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                          itemCount: controller.listData.last.items.length,
-                          itemBuilder: (context, index) => Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Image.network(
-                                      controller.listData.last.items[index].productImage.toString())
-                                  // child: Image.network(
-                                  //     controller.listData.last.items[index].productImage.toString())
-                                  ,
-                                ),
-                                Text(controller.listData.last.items[index].productName.toString())
-                              ],
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: Column(
+                      children: [
+                        Text(controller.listData.last.section.toString()),
+                        Gap(10),
+                        Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          elevation: 5,
+                          child: GridView.builder(
+                            physics: PageScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                            itemCount: controller.listData.last.items.length,
+                            itemBuilder: (context, index) => Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: Image.network(controller
+                                        .listData.last.items[index].productImage
+                                        .toString())
+                                    // child: Image.network(
+                                    //     controller.listData.last.items[index].productImage.toString())
+                                    ,
+                                  ),
+                                  Text(controller.listData.last.items[index].productName.toString())
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(controller.listData.first.sectionTitle.toString()),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ListView.builder(
+                          physics: PageScrollPhysics(),
+                          itemCount: 5,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              shape:
+                                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              elevation: 5,
+                              child: ListTile(
+                                onTap: () {
+                                  final url =
+                                      Uri.parse(controller.listData.first.items[index].link);
+                                  launchUrl(url);
+                                },
+                                title: Image.network(
+                                    controller.listData.first.items[index].articleImage.toString()),
+                                subtitle: Text(
+                                    controller.listData.first.items[index].articleTitle.toString()),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
         )
